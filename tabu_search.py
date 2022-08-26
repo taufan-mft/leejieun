@@ -15,9 +15,9 @@ class TabuSearch:
         self.number_of_customer = number_of_customer
         self.api_key = 'AIzaSyDTA4A1s4ZYYNvzVdlHF3Lxpp4UAhRyz08'
         self.destinations = ['-7.391411,109.258934', '-7.393778,109.244960', '-7.401416,109.245107',
-                             '-7.396291,109.265564']
+                             '-7.396291,109.265564', '-7.405146,109.245170']
 
-    def fetch_matrix(self, number_of_destinations, origin, destinations):
+    def fetch_matrix(self, origin, destinations):
         url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial'
         params = {
             'key': self.api_key,
@@ -26,31 +26,30 @@ class TabuSearch:
         }
         resp = requests.get(url, params=params)
         received_array = resp.json()['rows'][0]['elements']
-        holder = np.zeros((1, number_of_destinations))
         temp = []
         for index, data in enumerate(received_array):
             temp.append(data['distance']['value'])
-
-        holder[0] = temp
         return temp
 
     def build_matrix(self):
-        origin = '40.6655101,-73.8918896999999'
         number_of_destinations = len(self.destinations)
         parsed_destinations = '|'.join(map(str, self.destinations))
         matrix = np.zeros((number_of_destinations, number_of_destinations))
         for idx, destination in enumerate(self.destinations):
-            result = self.fetch_matrix(number_of_destinations, destination, parsed_destinations)
+            result = self.fetch_matrix(destination, parsed_destinations)
             matrix[idx] = result
         print(matrix)
         return matrix
 
     def generate_initial_solution(self):
         matrix = self.build_matrix()
-        result = []
+        result = [0]
         current = 0
         distance = 0
+        total_distance = 0
         for idx, destination in enumerate(self.destinations):
+            if len(result) is len(self.destinations) - 1:
+                break
             distance_matrix = matrix[current]
             min_value = min(i for i in distance_matrix if i > 0 and i != distance)
             at = np.where(distance_matrix == min_value)
@@ -58,7 +57,10 @@ class TabuSearch:
             result.append(result_index)
             current = result_index
             distance = min_value
+            total_distance += distance
+        result.append(0)
         print(result)
+        print('Total distance: ', total_distance)
 
 
 tasya = TabuSearch(max_iteration=5, number_of_customer=2)
