@@ -1,5 +1,6 @@
 import requests
 import numpy as np
+import random
 
 mockup_response = {
     'destination_addresses': ['585 Schenectady Ave, Brooklyn, NY 11203, USA', '102-01 66th Rd, Queens, NY 11375, USA'],
@@ -16,6 +17,7 @@ class TabuSearch:
         self.api_key = 'AIzaSyDTA4A1s4ZYYNvzVdlHF3Lxpp4UAhRyz08'
         self.destinations = ['-7.391411,109.258934', '-7.393778,109.244960', '-7.401416,109.245107',
                              '-7.396291,109.265564', '-7.405146,109.245170']
+        self.matrix = np.array([])
 
     def fetch_matrix(self, origin, destinations):
         url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial'
@@ -41,16 +43,33 @@ class TabuSearch:
         print(matrix)
         return matrix
 
+    @staticmethod
+    def swap_move(arr):
+        i1, i2 = random.sample(arr[1:len(arr) - 1], 2)
+        arr[i1], arr[i2] = arr[i2], arr[i1]
+        return {
+            'moves': (arr[i1], arr[i2]),
+            'arr': arr,
+        }
+
+    def calculate_distance(self, solution):
+        distance = 0
+        for idx, _ in enumerate(solution):
+            if idx is not len(solution) - 1:
+                print('distance from', solution[idx], solution[idx+1], self.matrix[solution[idx], solution[idx + 1]])
+                distance += self.matrix[solution[idx], solution[idx + 1]]
+        return distance
+
     def generate_initial_solution(self):
-        matrix = self.build_matrix()
+        self.matrix = self.build_matrix()
         result = [0]
         current = 0
         distance = 0
         total_distance = 0
-        for idx, destination in enumerate(self.destinations):
+        for _ in enumerate(self.destinations):
             if len(result) is len(self.destinations) - 1:
                 break
-            distance_matrix = matrix[current]
+            distance_matrix = self.matrix[current]
             min_value = min(i for i in distance_matrix if i > 0 and i != distance)
             at = np.where(distance_matrix == min_value)
             result_index = at[0][0]
@@ -60,7 +79,11 @@ class TabuSearch:
             total_distance += distance
         result.append(0)
         print(result)
-        print('Total distance: ', total_distance)
+        print('Total distance: ', self.calculate_distance(result))
+        swapped = self.swap_move(result)
+        print('swapped', swapped['moves'], 'result', swapped['arr'])
+        new_distance = self.calculate_distance(swapped['arr'])
+        print('new distance', new_distance)
 
 
 tasya = TabuSearch(max_iteration=5, number_of_customer=2)

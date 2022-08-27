@@ -1,16 +1,10 @@
-# This is a sample Python script.
+import numpy as np
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+tasya = np.array([[0, 1594, 2455, 1204, 2869],
+                  [1594, 0, 860, 2798, 1274],
+                  [2455, 860, 0, 3658, 414],
+                  [1204, 2798, 3658, 0, 4072],
+                  [2869, 1274, 414, 4072, 0], ]
+                 )
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+print(tasya[0, 2])
