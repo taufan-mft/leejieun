@@ -1,10 +1,6 @@
-import numpy as np
-
-tasya = np.array([[0, 1594, 2455, 1204, 2869],
-                  [1594, 0, 860, 2798, 1274],
-                  [2455, 860, 0, 3658, 414],
-                  [1204, 2798, 3658, 0, 4072],
-                  [2869, 1274, 414, 4072, 0], ]
-                 )
-
-print(tasya[0, 2])
+tasya = [{'moves': (1, 2), 'arr': [0, 3, 2, 1, 0], 'distance': 7316.0},
+         {'moves': (2, 3), 'arr': [0, 2, 1, 3, 0], 'distance': 7317.0},
+         {'moves': (1, 3), 'arr': [0, 1, 3, 2, 0], 'distance': 10505.0},
+         {'moves': (3, 1), 'arr': [0, 1, 3, 2, 0], 'distance': 10505.0},
+         {'moves': (1, 3), 'arr': [0, 1, 3, 2, 0], 'distance': 10505.0}]
+print(min(data['distance'] for data in tasya))
