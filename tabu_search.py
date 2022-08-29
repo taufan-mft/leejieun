@@ -1,18 +1,38 @@
 from copy import copy
-
+import time
+import math
 import requests
 import numpy as np
 import random
+
+
+def convert_km(meter):
+    return math.floor(meter / 1000)
+
+
+def check_in_tabu(move, tabus):
+    found = False
+    for tabu in tabus:
+        if tabu['move'] == move:
+            found = True
+    return found
 
 
 class TabuSearch:
     def __init__(self, max_iteration, number_of_customer):
         self.max_iteration = max_iteration
         self.number_of_customer = number_of_customer
+        self.can_continue = True
         self.tabu_list = []
+        self.initial_distance = 0
+        self.max_keep = 5
+        self.iteration = 0
+        self.iteration_since_reset = 0
         self.api_key = 'AIzaSyDTA4A1s4ZYYNvzVdlHF3Lxpp4UAhRyz08'
-        self.destinations = ['-7.391411,109.258934', '-7.393778,109.244960', '-7.401416,109.245107',
-                             '-7.396291,109.265564', '-7.405146,109.245170']
+        self.destinations = ['-7.422743,109.179027', '-6.960964,107.567216', '-6.238389,106.829998',
+                             '-7.685202,109.041653', '-6.353464,107.239746', '-6.763633,108.518798',
+                             '-7.054489,110.433123', '-7.312553,112.711822', '-7.388220,110.569484',
+                             '-7.710929,110.355478', '-7.693007,109.692359']
         self.matrix = np.array([])
 
     def fetch_matrix(self, origin, destinations):
@@ -36,13 +56,32 @@ class TabuSearch:
         for idx, destination in enumerate(self.destinations):
             result = self.fetch_matrix(destination, parsed_destinations)
             matrix[idx] = result
-        print(matrix)
         return matrix
 
-    @staticmethod
-    def swap_move(arr):
+    def clear_tabu(self):
+        if self.max_keep == self.iteration_since_reset:
+            if len(self.tabu_list) > 0:
+                for idx, tabu in enumerate(self.tabu_list):
+                    if tabu['iteration'] == self.iteration - 5:
+                        self.tabu_list.pop(idx)
+                self.iteration_since_reset = 0
+                return
+        self.iteration_since_reset += 1
+
+    def swap_move(self, arr):
         copied = copy(arr)
-        i1, i2 = random.sample(copied[1:len(copied) - 1], 2)
+        copied_second = copied[1:len(copied) - 1]
+        is_available = False
+        total_swap = len(self.destinations) * (len(self.destinations) - 1) / 2
+        iteration = 0
+        i1, i2 = (0, 0)
+        while not is_available and iteration <= total_swap:
+            iteration += 1
+            i1, i2 = random.sample(copied_second, 2)
+            if not check_in_tabu((i1, i2), self.tabu_list) and not check_in_tabu((i2, i1), self.tabu_list):
+                is_available = True
+        if (i1, i2) == (0, 0):
+            self.can_continue = False
         idx = arr.index(i1)
         idx2 = arr.index(i2)
         copied[idx], copied[idx2] = copied[idx2], copied[idx]
@@ -68,36 +107,73 @@ class TabuSearch:
             })
         return temp
 
+    @staticmethod
+    def find_minimum_distance(solution):
+        min_distance = min(data['distance'] for data in solution)
+        index = -1
+        for idx, data in enumerate(solution):
+            if data['distance'] is min_distance:
+                index = idx
+        return {
+            'min_distance': min_distance,
+            'index': index,
+        }
+
     def generate_initial_solution(self):
         self.matrix = self.build_matrix()
         result = [0]
         current = 0
-        distance = 0
+        distance_list = []
         total_distance = 0
         for _ in enumerate(self.destinations):
-            if len(result) is len(self.destinations) - 1:
+            if len(result) is len(self.destinations):
                 break
             distance_matrix = self.matrix[current]
-            min_value = min(i for i in distance_matrix if i > 0 and i != distance)
-            at = np.where(distance_matrix == min_value)
-            result_index = at[0][0]
-            result.append(result_index)
-            current = result_index
-            distance = min_value
-            total_distance += distance
+            prohibited_distance = []
+            ok = False
+            while not ok:
+                min_value = min(i for i in distance_matrix if i > 0 and i not in prohibited_distance)
+                at = np.where(distance_matrix == min_value)
+                result_index = at[0][0]
+                if result_index in result:
+                    prohibited_distance.append(min_value)
+                    continue
+                ok = True
+                distance_list.append(min_value)
+                result.append(result_index)
+                current = result_index
+                distance = min_value
+                total_distance += distance
         result.append(0)
-        print('Initial Solution')
-        print(result)
-        print('Total distance: ', self.calculate_distance(result))
+        print('Initial Solution', result)
+        print('Total distance: ', convert_km(self.calculate_distance(result)), 'kilometers')
+        self.initial_distance = self.calculate_distance(result)
         return result
 
     def haleluya(self):
         initial_solution = self.generate_initial_solution()
-        iteration = 0
-        neighbourhood = self.generate_neighbourhood(initial_solution)
         distance = self.calculate_distance(initial_solution)
-        print('the neighbour', neighbourhood)
+        while self.iteration < self.max_iteration:
+            self.clear_tabu()
+            neighbourhood = self.generate_neighbourhood(initial_solution)
+            if not self.can_continue:
+                print('cant continue', self.iteration)
+                break
+            best_solution = self.find_minimum_distance(neighbourhood)
+            if best_solution['min_distance'] < distance:
+                self.tabu_list.append({
+                    'move': neighbourhood[best_solution['index']]['moves'],
+                    'iteration': self.iteration,
+                })
+                distance = best_solution['min_distance']
+                initial_solution = copy(neighbourhood[best_solution['index']]['arr'])
+            self.iteration += 1
+        print('final solution:', initial_solution)
+        print('final distance:', convert_km(distance), 'kilometers')
+        print('reduction:', math.floor(((self.initial_distance - distance) / self.initial_distance) * 100), '% -- COOL')
+        print('Selamat sayang! 🔥 🎉')
+        print('Ndang sempro', self.iteration)
 
 
-tasya = TabuSearch(max_iteration=100, number_of_customer=2)
-tasya.haleluya()
+ts = TabuSearch(max_iteration=500, number_of_customer=2)
+ts.haleluya()
