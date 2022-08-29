@@ -19,9 +19,8 @@ def check_in_tabu(move, tabus):
 
 
 class TabuSearch:
-    def __init__(self, max_iteration, number_of_customer):
+    def __init__(self, max_iteration, destinations):
         self.max_iteration = max_iteration
-        self.number_of_customer = number_of_customer
         self.can_continue = True
         self.tabu_list = []
         self.initial_distance = 0
@@ -29,10 +28,7 @@ class TabuSearch:
         self.iteration = 0
         self.iteration_since_reset = 0
         self.api_key = 'AIzaSyDTA4A1s4ZYYNvzVdlHF3Lxpp4UAhRyz08'
-        self.destinations = ['-7.422743,109.179027', '-6.960964,107.567216', '-6.238389,106.829998',
-                             '-7.685202,109.041653', '-6.353464,107.239746', '-6.763633,108.518798',
-                             '-7.054489,110.433123', '-7.312553,112.711822', '-7.388220,110.569484',
-                             '-7.710929,110.355478', '-7.693007,109.692359']
+        self.destinations = destinations
         self.matrix = np.array([])
 
     def fetch_matrix(self, origin, destinations):
@@ -168,12 +164,8 @@ class TabuSearch:
                 distance = best_solution['min_distance']
                 initial_solution = copy(neighbourhood[best_solution['index']]['arr'])
             self.iteration += 1
-        print('final solution:', initial_solution)
-        print('final distance:', convert_km(distance), 'kilometers')
-        print('reduction:', math.floor(((self.initial_distance - distance) / self.initial_distance) * 100), '% -- COOL')
-        print('Selamat sayang! 🔥 🎉')
-        print('Ndang sempro', self.iteration)
-
-
-ts = TabuSearch(max_iteration=500, number_of_customer=2)
-ts.haleluya()
+        return {
+            'solution': initial_solution,
+            'distance': convert_km(distance),
+            'reduction': math.floor(((self.initial_distance - distance) / self.initial_distance) * 100)
+        }
