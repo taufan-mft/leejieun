@@ -2,12 +2,13 @@ from tabu_search import TabuSearch
 import math
 
 class Jeanice:
-    def __init__(self, efficiency, max_duration, petrol_price, capacity, destinations):
+    def __init__(self, efficiency, max_duration, petrol_price, capacity, destinations, max_iteration):
         self.efficiency = efficiency
         self.max_duration = max_duration
         self.petrol_price = petrol_price
         self.capacity = capacity
         self.destinations = destinations
+        self.max_iteration = max_iteration
 
     def calculate_petrol_price(self, distance):
         consumed = math.ceil(distance/self.efficiency)
@@ -15,7 +16,7 @@ class Jeanice:
         return price
 
     def haleluya(self):
-        ts = TabuSearch(max_iteration=500, destinations=self.destinations)
+        ts = TabuSearch(max_iteration=self.max_iteration, destinations=self.destinations)
         min_distance = 99999999999
         best_solution = None
         for i in range(3):
