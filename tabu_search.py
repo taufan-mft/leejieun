@@ -1,10 +1,11 @@
+import os
 from copy import copy
 import time
 import math
 import requests
 import numpy as np
 import random
-
+from dotenv import load_dotenv
 
 def convert_km(meter):
     return math.floor(meter / 1000)
@@ -20,6 +21,7 @@ def check_in_tabu(move, tabus):
 
 class TabuSearch:
     def __init__(self, max_iteration, destinations):
+        load_dotenv()
         self.max_iteration = max_iteration
         self.can_continue = True
         self.tabu_list = []
@@ -27,7 +29,7 @@ class TabuSearch:
         self.max_keep = 5
         self.iteration = 0
         self.iteration_since_reset = 0
-        self.api_key = 'AIzaSyDTA4A1s4ZYYNvzVdlHF3Lxpp4UAhRyz08'
+        self.api_key = os.getenv('API_KEY')
         self.destinations = destinations
         self.matrix = np.array([])
 
