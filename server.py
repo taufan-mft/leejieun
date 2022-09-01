@@ -24,7 +24,7 @@ def hello():
     max_duration = data['max_duration']
     efficiency = data['efficiency']
     destinations = data['destinations']
-    loading_time = data['loading_time']
+    loading_time = int(data['loading_time'])
     map_dest = [destination['lat_lng'] for destination in destinations]
     jeanice = Jeanice(destinations=map_dest, capacity=700, efficiency=efficiency, max_duration=max_duration,
                       petrol_price=petrol_price, max_iteration=num_iteration)

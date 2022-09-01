@@ -19,7 +19,7 @@ class Christine:
             'departure_time': departure_time,
         }
         resp = requests.get(url, params=params)
-        time_seconds = resp.json()['rows'][0]['elements'][0]['duration']['value']
+        time_seconds = resp.json()['rows'][0]['elements'][0]['duration_in_traffic']['value']
         return time_seconds
 
     def haleluya(self):
