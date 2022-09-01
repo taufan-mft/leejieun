@@ -2,8 +2,11 @@ import json
 from flask import Flask, jsonify, request
 from markupsafe import escape
 from jeanice import Jeanice
+from christine import Christine
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 def convert_to_id(beginning, solution, map_dest):
     temp = []
@@ -21,10 +24,13 @@ def hello():
     max_duration = data['max_duration']
     efficiency = data['efficiency']
     destinations = data['destinations']
+    loading_time = data['loading_time']
     map_dest = [destination['lat_lng'] for destination in destinations]
     jeanice = Jeanice(destinations=map_dest, capacity=700, efficiency=efficiency, max_duration=max_duration,
                       petrol_price=petrol_price, max_iteration=num_iteration)
     solution = jeanice.haleluya()
+    christine = Christine(map_dest, solution['solution'], loading_time)
+    time_manager = christine.haleluya()
     return jsonify({
         'status': 'OK',
         'solution': str(solution['solution']),
@@ -32,6 +38,7 @@ def hello():
         'distance': int(solution['distance']),
         'petrol_price': solution['petrol_price'],
         'reduction': solution['reduction'],
+        **time_manager,
     })
 
 

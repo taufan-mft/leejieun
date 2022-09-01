@@ -3,12 +3,12 @@ import math
 
 class Jeanice:
     def __init__(self, efficiency, max_duration, petrol_price, capacity, destinations, max_iteration):
-        self.efficiency = efficiency
-        self.max_duration = max_duration
-        self.petrol_price = petrol_price
-        self.capacity = capacity
+        self.efficiency = int(efficiency)
+        self.max_duration = int(max_duration)
+        self.petrol_price = int(petrol_price)
+        self.capacity = int(capacity)
         self.destinations = destinations
-        self.max_iteration = max_iteration
+        self.max_iteration = int(max_iteration)
 
     def calculate_petrol_price(self, distance):
         consumed = math.ceil(distance/self.efficiency)
