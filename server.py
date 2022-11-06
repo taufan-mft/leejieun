@@ -34,6 +34,8 @@ def hello():
     return jsonify({
         'status': 'OK',
         'solution': str(solution['solution']),
+        'solution_from_nn': str(solution['solution_from_nn']),
+        'distance_from_nn': str(solution['distance_from_nn']),
         'solution_id': convert_to_id(destinations, solution['solution'], map_dest),
         'distance': int(solution['distance']),
         'petrol_price': solution['petrol_price'],

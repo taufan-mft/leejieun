@@ -32,6 +32,8 @@ class TabuSearch:
         self.api_key = os.getenv('API_KEY')
         self.destinations = destinations
         self.matrix = np.array([])
+        self.solution_from_nn = []
+        self.distance_from_nn = 0
 
     def fetch_matrix(self, origin, destinations):
         url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial'
@@ -150,7 +152,9 @@ class TabuSearch:
 
     def haleluya(self):
         initial_solution = self.generate_initial_solution()
+        self.solution_from_nn = copy(initial_solution)
         distance = self.calculate_distance(initial_solution)
+        self.distance_from_nn = copy(distance)
         while self.iteration < self.max_iteration:
             self.clear_tabu()
             neighbourhood = self.generate_neighbourhood(initial_solution)
@@ -167,6 +171,8 @@ class TabuSearch:
                 initial_solution = copy(neighbourhood[best_solution['index']]['arr'])
             self.iteration += 1
         return {
+            'solution_from_nn': self.solution_from_nn,
+            'distance_from_nn': convert_km(self.distance_from_nn),
             'solution': initial_solution,
             'distance': convert_km(distance),
             'reduction': math.floor(((self.initial_distance - distance) / self.initial_distance) * 100)

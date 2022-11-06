@@ -24,9 +24,11 @@ class Jeanice:
             if current_solution['distance'] < min_distance:
                 best_solution = current_solution
                 min_distance = current_solution['distance']
-        solution, distance, reduction = best_solution.values()
+        solution_from_nn, distance_from_nn, solution, distance, reduction = best_solution.values()
         petrol_price = self.calculate_petrol_price(distance)
         return {
+            'solution_from_nn': solution_from_nn,
+            'distance_from_nn': distance_from_nn,
             'solution': solution,
             'distance': distance,
             'petrol_price': petrol_price,
