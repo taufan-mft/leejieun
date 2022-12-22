@@ -26,7 +26,7 @@ class TabuSearch:
         self.can_continue = True
         self.tabu_list = []
         self.initial_distance = 0
-        self.max_keep = 5
+        self.max_keep = 100
         self.iteration = 0
         self.iteration_since_reset = 0
         self.api_key = os.getenv('API_KEY')
