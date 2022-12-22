@@ -123,7 +123,8 @@ class TabuSearch:
         }
 
     def generate_initial_solution(self):
-        self.matrix = self.build_matrix()
+        if len(self.matrix) == 0:
+            self.matrix = self.build_matrix()
         print(self.matrix)
         result = [0]
         current = 0
