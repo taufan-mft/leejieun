@@ -156,6 +156,8 @@ class TabuSearch:
         return result
 
     def haleluya(self):
+        self.iteration = 0
+        self.tabu_list = []
         initial_solution = self.generate_initial_solution()
         self.solution_from_nn = copy(initial_solution)
         distance = self.calculate_distance(initial_solution)
