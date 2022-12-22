@@ -124,7 +124,7 @@ class TabuSearch:
 
     def generate_initial_solution(self):
         self.matrix = self.build_matrix()
-        print( self.matrix)
+        print(self.matrix)
         result = [0]
         current = 0
         distance_list = []
@@ -175,6 +175,7 @@ class TabuSearch:
                 distance = best_solution['min_distance']
                 initial_solution = copy(neighbourhood[best_solution['index']]['arr'])
             self.iteration += 1
+            print('next iterte', iteration)
         print('final solution tasya', initial_solution)
         print('solution in m:', distance)
         return {
