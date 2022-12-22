@@ -160,7 +160,7 @@ class TabuSearch:
         distance = self.calculate_distance(initial_solution)
         self.distance_from_nn = copy(distance)
         while self.iteration < self.max_iteration:
-            self.clear_tabu()
+            # self.clear_tabu()
             neighbourhood = self.generate_neighbourhood(initial_solution)
             if not self.can_continue:
                 print('cant continue', self.iteration)
