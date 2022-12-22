@@ -36,11 +36,13 @@ class TabuSearch:
         self.distance_from_nn = 0
 
     def fetch_matrix(self, origin, destinations):
-        url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial'
+        url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric'
         params = {
             'key': self.api_key,
             'origins': origin,
             'destinations': destinations,
+            'departure_time': 'now',
+            'avoid': 'indoor'
         }
         resp = requests.get(url, params=params)
         received_array = resp.json()['rows'][0]['elements']
@@ -121,6 +123,7 @@ class TabuSearch:
 
     def generate_initial_solution(self):
         self.matrix = self.build_matrix()
+        print( self.matrix)
         result = [0]
         current = 0
         distance_list = []
@@ -147,6 +150,7 @@ class TabuSearch:
         result.append(0)
         print('Initial Solution', result)
         print('Total distance: ', convert_km(self.calculate_distance(result)), 'kilometers')
+        print('Total distance in m:', self.calculate_distance(result))
         self.initial_distance = self.calculate_distance(result)
         return result
 
@@ -170,6 +174,8 @@ class TabuSearch:
                 distance = best_solution['min_distance']
                 initial_solution = copy(neighbourhood[best_solution['index']]['arr'])
             self.iteration += 1
+        print('final solution tasya', initial_solution)
+        print('solution in m:', distance)
         return {
             'solution_from_nn': self.solution_from_nn,
             'distance_from_nn': convert_km(self.distance_from_nn),
