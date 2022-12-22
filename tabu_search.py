@@ -46,6 +46,7 @@ class TabuSearch:
         }
         resp = requests.get(url, params=params)
         received_array = resp.json()['rows'][0]['elements']
+        print('hype boy', received_array)
         temp = []
         for index, data in enumerate(received_array):
             temp.append(data['distance']['value'])
