@@ -19,7 +19,7 @@ class Jeanice:
         ts = TabuSearch(max_iteration=self.max_iteration, destinations=self.destinations)
         min_distance = 99999999999
         best_solution = None
-        for i in range(3):
+        for i in range(5):
             current_solution = ts.haleluya()
             if current_solution['distance'] < min_distance:
                 best_solution = current_solution
