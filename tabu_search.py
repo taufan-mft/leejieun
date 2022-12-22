@@ -175,7 +175,7 @@ class TabuSearch:
                 distance = best_solution['min_distance']
                 initial_solution = copy(neighbourhood[best_solution['index']]['arr'])
             self.iteration += 1
-            print('next iterte', iteration)
+            print('iterate', self.iteration)
         print('final solution tasya', initial_solution)
         print('solution in m:', distance)
         return {
