@@ -22,6 +22,7 @@ def check_in_tabu(move, tabus):
 class TabuSearch:
     def __init__(self, max_iteration, destinations):
         load_dotenv()
+        np.set_printoptions(suppress=True)
         self.max_iteration = max_iteration
         self.can_continue = True
         self.tabu_list = []
@@ -49,7 +50,6 @@ class TabuSearch:
         temp = []
         for index, data in enumerate(received_array):
             temp.append(data['distance']['value'])
-        print('hype boy', temp)
         return temp
 
     def build_matrix(self):
